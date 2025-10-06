@@ -16,7 +16,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
 
-   
     /**
      * アプリケーション全体のセキュリティ設定を行います
      * - CORS（クロスオリジンリソースシェアリング:他オリジンからのアクセス）を有効化
@@ -27,11 +26,9 @@ public class SecurityConfig {
      * @param http HttpSecurity設定オブジェクト
      * @return SecurityFilterChain
      */
-       @Bean
+         @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-		        
-		        
+        http    
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
                         "/", "/*.html", "/*.css", "/*.js", "/favicon.ico"
@@ -42,6 +39,7 @@ public class SecurityConfig {
             );
         return http.build();
     }
+
     /**
      * CORS（クロスオリジンリソースシェアリング:他オリジンからのアクセス）の設定を行います
      * - setAllowedOrigins : 許可するオリジン設定
