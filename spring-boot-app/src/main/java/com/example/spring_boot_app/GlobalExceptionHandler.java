@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import java.util.stream.Collectors;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ControllerAdvice
@@ -31,5 +33,17 @@ public class GlobalExceptionHandler {
             .status(e.getStatusCode())
             .contentType(MediaType.APPLICATION_JSON)
             .body(Map.of("error", e.getResponseBodyAsString()));
+    }
+
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleMethodArgumentNotValidExceptions(MethodArgumentNotValidException e) {
+        log.error("バリデーションで例外が発生しました", e);
+        String errors = e.getBindingResult().getFieldErrors().stream()
+            .map(error -> error.getField() + ": " + error.getDefaultMessage())
+            .collect(Collectors.joining(", "));
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(Map.of("error", errors));
     }
 }
