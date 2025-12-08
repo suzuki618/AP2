@@ -101,4 +101,3 @@ func main() {
 	}
 	fmt.Printf("(final) total matches: %d\n", finalTotal)
 }
-
