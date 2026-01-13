@@ -6,13 +6,29 @@ use env_logger::Env;
 mod config;
 mod supabase_auth_service;
 mod routes_auth;
+mod supabase_auth_middleware;
+mod db;
+mod models;
+mod routes_memo;
 use config::CONFIG;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    
+
+    // ✅ DB初期化をサーバ起動前に実行
+    if let Err(e) = db::init_db().await {
+        eprintln!("Failed to initialize database: {}", e);
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            format!("Database initialization failed: {}", e),
+        ));
+    }
+    println!("✅ Database connection established");
+
     println!("🚀 Server running at http://0.0.0.0:{}", CONFIG.server_port);
+
     env_logger::init_from_env(Env::default().default_filter_or("info"));
+
     HttpServer::new(|| {
         let cors = Cors::default()
             .allowed_origin("http://localhost:8080")
@@ -20,10 +36,13 @@ async fn main() -> std::io::Result<()> {
             .allowed_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
             .allow_any_header()
             .supports_credentials();
+
         App::new()
             .wrap(Logger::default())
             .wrap(cors)
-            .configure(routes_auth::config)
+            .wrap(supabase_auth_middleware::SupabaseAuthMiddleware)
+            .configure(routes_auth::config)   // ✅ 既存
+            .configure(routes_memo::config)   // ✅ 追加
             .service(Files::new("/", "./static").index_file("index.html"))
     })
     .bind(("0.0.0.0", CONFIG.server_port))?
