@@ -60,7 +60,7 @@ export default function LoginPage() {
   };
 
   const loginGithub = () => {
-    window.location.href = '/memos';
+    window.location.href = '/api/auth/oauth2/github';
   };
 
   
