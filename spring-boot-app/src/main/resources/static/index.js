@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/memo.html';
     })();
 
-        // --- ログイン(メール) ---
+    // --- ログイン(メール) ---
     document.getElementById('login-btn').onclick = async () => {
         showError('');
         const email = document.getElementById('email').value;
@@ -48,9 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
             showError(error.message);
         }
     };
-        // --- Github認証 ---
+
+    // --- Github認証 ---
     document.getElementById('github-login-btn').onclick = async () => {
         window.location.href = '/api/auth/oauth2/github';
     };
-
 });

@@ -14,13 +14,13 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 @Configuration
 @EnableWebSecurity
-
 public class SecurityConfig {
+
     @Autowired
     private SupabaseAuthFilter supabaseAuthFilter;
+
     /**
      * アプリケーション全体のセキュリティ設定を行います
      * - CORS（クロスオリジンリソースシェアリング:他オリジンからのアクセス）を有効化
@@ -31,7 +31,7 @@ public class SecurityConfig {
      * @param http HttpSecurity設定オブジェクト
      * @return SecurityFilterChain
      */
-        @Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .cors(withDefaults())
@@ -41,12 +41,10 @@ public class SecurityConfig {
                         "/", "/*.html", "/*.css", "/*.js", "/favicon.ico", "/api/auth/**"
                     ).permitAll()
                 .anyRequest().authenticated()
-            );
-            // 以下の行のみ追加
-            http.addFilterBefore(supabaseAuthFilter, UsernamePasswordAuthenticationFilter.class);
+            )
+            .addFilterBefore(supabaseAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 
     /**
      * CORS（クロスオリジンリソースシェアリング:他オリジンからのアクセス）の設定を行います

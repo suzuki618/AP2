@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
             .body(Map.of("error", e.getResponseBodyAsString()));
     }
 
-        @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleMethodArgumentNotValidExceptions(MethodArgumentNotValidException e) {
         log.error("バリデーションで例外が発生しました", e);
         String errors = e.getBindingResult().getFieldErrors().stream()

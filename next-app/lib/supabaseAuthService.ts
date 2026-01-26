@@ -69,6 +69,7 @@ function getUserByAccessToken(accessToken: string) {
     accessToken,
   });
 }
+
 // GitHub認証用URL取得
 function getGithubSigninUrl(redirectTo: string) {
   return `${SUPABASE_URL}/auth/v1/authorize?provider=github&redirect_to=${encodeURIComponent(
@@ -76,10 +77,10 @@ function getGithubSigninUrl(redirectTo: string) {
   )}&scopes=user:email`;
 }
 
-
 export const SupabaseAuthService = {
   signup,
   login,
   logout,
   getUserByAccessToken,
+  getGithubSigninUrl
 };

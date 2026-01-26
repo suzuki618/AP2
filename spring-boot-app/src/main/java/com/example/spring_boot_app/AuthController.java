@@ -6,9 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import java.util.Map;
 import java.io.IOException;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -43,7 +43,7 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("email", user.get("email")));
     }
 
-        /**
+    /**
      * ログインを行います
      * @param request アカウント情報
      * @return 実行結果
@@ -56,7 +56,7 @@ public class AuthController {
                 : ResponseEntity.badRequest().body(result);
     }
 
-        /**
+    /**
      * ログアウトを行います
      * @param authorizationHeader Authorizationヘッダ
      * @return 実行結果
@@ -67,7 +67,7 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Logout successful."));
     }
 
-        /**
+    /**
      * Github認証にリダイレクトします
      * @param response HTTPレスポンス
      * @param uriBuilder URI構築

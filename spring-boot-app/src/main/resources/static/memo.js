@@ -4,8 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sessionData = JSON.parse(localStorage.getItem('user_session'));
     const accessToken = sessionData?.access_token;
 
-
-        // --- メモ取得処理 ---
+    // --- メモ取得処理 ---
     const fetchMemos = async () => {
         try {
             const memos = await apiFetch('/api/memos', {}, accessToken);
@@ -14,6 +13,30 @@ document.addEventListener('DOMContentLoaded', () => {
             showError(error.message);
         }
     };
+
+    // --- ログイン済の確認 (初期表示時) ---
+    (() => {
+        if (!accessToken) {
+            localStorage.removeItem('user_session');
+            window.location.href = '/index.html';
+            return;
+        }
+        document.getElementById('user-email').textContent = sessionData.user?.email;
+        fetchMemos();
+    })();
+
+    // --- ログアウト処理 ---
+    document.getElementById('logout-btn').onclick = async () => {
+        try {
+            await apiFetch('/api/auth/logout', { method: 'POST' }, accessToken);
+            localStorage.removeItem('user_session');
+            window.location.href = '/index.html';
+        } catch (error) {
+            showError(error.message);
+        }
+    };
+
+   
 
     // --- メモ作成処理 ---
     const createMemo = async (title, content) => {
@@ -95,33 +118,5 @@ document.addEventListener('DOMContentLoaded', () => {
             memoList.appendChild(li);
         });
     };
-
-    
-
-
-    // --- ログイン済の確認 (初期表示時) ---
-    (() => {
-        if (!accessToken) {
-            localStorage.removeItem('user_session');
-            window.location.href = '/index.html';
-            return;
-        }
-        document.getElementById('user-email').textContent = sessionData.user?.email;
-        // 以下の行のみ追加
-        fetchMemos();
-    })();
-
-        // --- ログアウト処理 ---
-    document.getElementById('logout-btn').onclick = async () => {
-        try {
-            await apiFetch('/api/auth/logout', { method: 'POST' }, accessToken);
-            localStorage.removeItem('user_session');
-            window.location.href = '/index.html';
-        } catch (error) {
-            showError(error.message);
-        }
-    };
-
-    
 
 });
