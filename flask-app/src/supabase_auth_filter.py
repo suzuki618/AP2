@@ -10,6 +10,8 @@ def auth_filter():
         "/", "/*.html", "/*.css", "/*.js", "/favicon.ico",
         "/api/auth/*"
     ]
+    if request.method == "OPTIONS":
+        return
     if any(fnmatch(request.path, pattern) for pattern in excluded_patterns):
         return
     

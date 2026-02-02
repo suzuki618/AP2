@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiFetch, errorHandling } from '@/lib/apiFetch';
+import { apiFetch, errorHandling, getApiUrl } from '@/lib/apiFetch';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
 export default function LoginPage() {
@@ -12,52 +12,36 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // OAuth エラー
+  // OAuth エラー対応（GitHubログイン後）
   useEffect(() => {
-  if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return;
 
-  const handleOAuthLogin = async () => {
-    const session = Object.fromEntries(
-      new URLSearchParams(window.location.hash.substring(1))
-    );
-
-    if (!session.access_token) return;
-
-    try {
-      const userData = await apiFetch('/api/auth/user', {}, session.access_token);
-      session.user = userData;
-
-      // ローカルストレージの更新は非同期ではないのでOK
-      localStorage.setItem('user_session', JSON.stringify(session));
-
-      // setTimeout で次のレンダーに移すことで警告を回避
-      setTimeout(() => {
-        router.push('/memos');
-      }, 0);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  handleOAuthLogin();
-}, [router]);
-
-
-  // OAuth Login
-  useEffect(() => {
-    (async () => {
+    const handleOAuthLogin = async () => {
       const session = Object.fromEntries(
         new URLSearchParams(window.location.hash.substring(1))
       );
 
       if (!session.access_token) return;
 
-      const userData = await apiFetch('/api/auth/user', {}, session.access_token);
-      session.user = userData;
+      try {
+        const userData = await apiFetch(
+          '/api/auth/user',
+          {},
+          session.access_token as string
+        );
 
-      localStorage.setItem('user_session', JSON.stringify(session));
-      router.push('/memos');
-    })();
+        session.user = userData;
+        localStorage.setItem('user_session', JSON.stringify(session));
+
+        setTimeout(() => {
+          router.push('/memos');
+        }, 0);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    handleOAuthLogin();
   }, [router]);
 
   // Email login
@@ -84,15 +68,16 @@ export default function LoginPage() {
     }, setError);
   };
 
+  // ✅ GitHub OAuth（getApiUrl を使用）
   const loginGithub = () => {
-    window.location.href = '/api/auth/oauth2/github';
+    const url = getApiUrl('/api/auth/oauth2/github');
+    window.location.href = url;
   };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-[#f5f5f7] px-4">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-sm p-10 border border-[#e5e5e5]">
 
-        {/* HEADER */}
         <h1 className="text-4xl font-semibold text-center tracking-tight mb-3 text-[#1d1d1f]">
           Sign in
         </h1>
@@ -100,9 +85,7 @@ export default function LoginPage() {
           ログイン
         </p>
 
-        {/* FORM */}
         <div className="space-y-5">
-
           <input
             type="email"
             placeholder="メールアドレス"
@@ -165,14 +148,12 @@ export default function LoginPage() {
           </button>
         </div>
 
-        {/* ERROR */}
         {error && (
           <div className="mt-6 text-red-600 text-sm text-center">
             {error}
           </div>
         )}
 
-        {/* SUCCESS */}
         {success && (
           <div className="mt-6 text-green-600 text-sm text-center">
             {success}
