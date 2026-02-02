@@ -1,4 +1,4 @@
-import { PrismaClient } from '@/prisma/prisma-client';
+import { PrismaClient } from '@prisma/client';
 
 // 環境変数からDATABASE_URLを構築
 const buildDatabaseUrl = () => {
